@@ -122,9 +122,9 @@ class statssearch extends ModuleGraph
         foreach ($result as $row) {
             if (Tools::strlen($row['keywords']) >= Configuration::get('PS_SEARCH_MINWORDLEN')) {
                 $table .= '<tr>
-					<td>' . $row['keywords'] . '</td>
-					<td>' . $row['occurences'] . '</td>
-					<td>' . $row['total'] . '</td>
+					<td>' . htmlspecialchars($row['keywords'], ENT_QUOTES, 'UTF-8') . '</td>
+					<td>' . (int) $row['occurences'] . '</td>
+					<td>' . (int) $row['total'] . '</td>
 				</tr>';
             }
         }
