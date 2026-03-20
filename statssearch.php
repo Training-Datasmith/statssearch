@@ -60,6 +60,15 @@ class statssearch extends ModuleGraph
         $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
     }
 
+    /**
+     * Install the module, create the search log table, and register all required hooks.
+     *
+     * Hooks registered:
+     *   actionSearch               — captures each front-office search query
+     *   displayAdminStatsModules   — renders the search terms grid in the admin
+     *
+     * @return bool True on successful installation, false otherwise
+     */
     public function install()
     {
         if (!parent::install() || !$this->registerHook('actionSearch') || !$this->registerHook('displayAdminStatsModules')) {
@@ -97,6 +106,14 @@ class statssearch extends ModuleGraph
         Db::getInstance()->execute($sql);
     }
 
+    /**
+     * Render the search-terms popularity chart on the admin statistics dashboard.
+     *
+     * Presents a pie chart of the most frequently searched terms.
+     * Supports CSV export of the raw search log.
+     *
+     * @return string HTML output for the statistics widget
+     */
     public function hookDisplayAdminStatsModules()
     {
         if (Tools::getValue('export')) {
