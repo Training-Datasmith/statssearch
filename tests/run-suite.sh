@@ -99,25 +99,9 @@ if $DOCKER_BIN run --rm --network "$NETWORK" --platform linux/amd64 \
 fi
 
 if [ "$probe_ok" -ne 1 ]; then
-  HOST_DB_PORT="${STATSSEARCH_HOST_DB_PORT:-3307}"
-  $DOCKER_BIN rm -f "$MARIADB_NAME" >/dev/null 2>&1 || true
-  $DOCKER_BIN run -d --name "$MARIADB_NAME" \
-    --platform linux/amd64 \
-    -p "127.0.0.1:${HOST_DB_PORT}:3306" \
-    -e MARIADB_DATABASE=statssearch \
-    -e MARIADB_USER=statssearch \
-    -e MARIADB_PASSWORD=statssearch \
-    -e MARIADB_ROOT_PASSWORD=statssearch-root \
-    "$MARIADB_IMAGE"
-
-  if ! wait_mariadb_ready; then
-    echo "MariaDB host fallback did not become ready within 30 seconds" >&2
-    exit 1
-  fi
-
   DB_HOST="127.0.0.1"
-  DB_PORT="$HOST_DB_PORT"
-  PHP_NETWORK_ARGS=(--network host)
+  DB_PORT="3306"
+  PHP_NETWORK_ARGS=(--network "container:${MARIADB_NAME}")
 fi
 
 verify_ok=0

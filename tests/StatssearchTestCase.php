@@ -36,7 +36,12 @@ abstract class StatssearchTestCase extends PHPUnit_Framework_TestCase
         $sql = 'SELECT COUNT(*) AS c FROM information_schema.tables '
             . 'WHERE table_schema = DATABASE() AND table_name = \'' . _DB_PREFIX_ . 'statssearch\'';
 
-        return (int) Db::getInstance()->getValue($sql) > 0;
+        $value = Db::getInstance()->getValue($sql);
+        if (!is_numeric($value)) {
+            $this->fail('information_schema count is not numeric: ' . var_export($value, true));
+        }
+
+        return (int) $value > 0;
     }
 
     protected function insertStatsRow($shopId, $shopGroupId, $keyword, $results, $dateAdd)

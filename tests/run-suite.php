@@ -81,14 +81,20 @@ function writePhpUnitXml($path, $bootstrap, $files)
 
 function parseOkSummary($output, $expectedCount)
 {
-    if (preg_match('/\b(Skipped|Incomplete|Risky|Warning:|FAILURES!)\b/i', $output)) {
+    if (strpos($output, 'Warning:') !== false || strpos($output, 'FAILURES!') !== false) {
         return false;
     }
-    if (!preg_match('/OK \\(' . $expectedCount . ' tests, (\\d+) assertions\\)/', $output, $matches)) {
+    if (strpos($output, 'Skipped') !== false || strpos($output, 'Incomplete') !== false || strpos($output, 'Risky') !== false) {
+        return false;
+    }
+    if (!preg_match('/^OK \\(' . $expectedCount . ' tests, [0-9]+ assertions\\)$/m', $output, $matches)) {
+        return false;
+    }
+    if (!preg_match('/^OK \\(' . $expectedCount . ' tests, ([0-9]+) assertions\\)$/m', $output, $countMatches)) {
         return false;
     }
 
-    return (int) $matches[1];
+    return (int) $countMatches[1];
 }
 
 function parseJunit($path, $expectedCount)
